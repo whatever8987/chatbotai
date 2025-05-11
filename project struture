@@ -1,0 +1,26 @@
+voice_assistant_project/
+├── manage.py                 # Django management command runner
+├── voice_assistant_project/  # Django Project Configuration
+│   ├── __init__.py
+│   ├── asgi.py               # ASGI entry point for Uvicorn/Gunicorn
+│   ├── settings.py           # Project settings and configurations
+│   ├── urls.py               # Main URL routing
+│   └── wsgi.py
+├── requirements/             # Dependency files
+│   ├── base.txt              # Core dependencies (Django, DRF, Celery, Redis, etc.)
+│   ├── dev.txt               # Development dependencies (debug toolbar, linters, testing tools)
+│   └── prod.txt              # Production-specific dependencies
+├── .env.example              # Template for environment variables
+├── .gitignore                # Specifies intentionally untracked files
+├── apps/                     # Custom Django Apps
+│   ├── users/                # User Auth & Profiles
+│   ├── contacts/             # User Contact Management
+│   ├── assistants/           # Assistant Configuration
+│   ├── telephony/            # CPaaS Integration & Call Handling
+│   ├── knowledge_base/       # Custom Data Sources & RAG
+│   ├── ai_core/              # LLM Interaction, Tooling, RAG Orchestration
+│   ├── tools/                # Tool Implementations
+│   └── realtime_audio/       # FastAPI/FastRTC for Audio Streaming (Can be separate service)
+├── celery_app.py             # Celery application instance definition
+├── entrypoint.sh             # Optional: Script for containerized startup
+└── Dockerfile                # Optional: Docker container definition

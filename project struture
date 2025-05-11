@@ -1,26 +1,85 @@
 voice_assistant_project/
-├── manage.py                 # Django management command runner
-├── voice_assistant_project/  # Django Project Configuration
+├── manage.py
+├── voice_assistant_project/  # Main Django Configuration
 │   ├── __init__.py
-│   ├── asgi.py               # ASGI entry point for Uvicorn/Gunicorn
-│   ├── settings.py           # Project settings and configurations
-│   ├── urls.py               # Main URL routing
+│   ├── asgi.py               # ASGI configuration for WebSockets
+│   ├── settings.py           # Project settings
+│   ├── urls.py               # Main URL dispatcher
 │   └── wsgi.py
-├── requirements/             # Dependency files
-│   ├── base.txt              # Core dependencies (Django, DRF, Celery, Redis, etc.)
-│   ├── dev.txt               # Development dependencies (debug toolbar, linters, testing tools)
-│   └── prod.txt              # Production-specific dependencies
-├── .env.example              # Template for environment variables
-├── .gitignore                # Specifies intentionally untracked files
+├── requirements/             # Dependency management (optional, could use a single requirements.txt)
+│   ├── base.txt              # Core dependencies
+│   ├── dev.txt               # Development dependencies
+│   ├── prod.txt              # Production dependencies
+├── .env.example              # Example environment variables
+├── .gitignore                # Git ignore file
 ├── apps/                     # Custom Django Apps
-│   ├── users/                # User Auth & Profiles
+│   ├── users/                # User Authentication and Profiles
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # Custom User model (optional)
+│   │   ├── urls.py           # API endpoints for users (register, login, etc.)
+│   │   └── views.py          # DRF ViewSets for user APIs
 │   ├── contacts/             # User Contact Management
-│   ├── assistants/           # Assistant Configuration
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # Contact model (linked to User)
+│   │   ├── urls.py           # API endpoints for contacts
+│   │   └── views.py          # DRF ViewSets for contact CRUD
+│   ├── assistants/           # Assistant Configuration & Management
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # AssistantConfig model (LLM settings, enabled tools, KB links)
+│   │   ├── urls.py           # API endpoints for assistant configs
+│   │   └── views.py          # DRF ViewSets for assistant configs
 │   ├── telephony/            # CPaaS Integration & Call Handling
-│   ├── knowledge_base/       # Custom Data Sources & RAG
-│   ├── ai_core/              # LLM Interaction, Tooling, RAG Orchestration
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # CallLog model (status, timestamps, user, contact, config)
+│   │   ├── urls.py           # CPaaS Webhook URLs (/telephony/incoming/, /telephony/status/)
+│   │   ├── views.py          # Webhook handler views
+│   │   ├── cpaas_client.py   # Helper functions/class for CPaaS SDK interaction (dialing, etc.)
+│   │   └── tasks.py          # Celery tasks for outgoing calls or webhook processing
+│   ├── knowledge_base/       # Custom Data Sources & RAG Ingestion/Retrieval
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # DataSource, DocumentChunk models
+│   │   ├── urls.py           # API endpoints for uploading/managing sources
+│   │   ├── views.py          # DRF ViewSets for data sources
+│   │   ├── processing.py     # Core parsing, chunking, embedding logic
+│   │   ├── search.py         # Vector database search/retrieval logic
+│   │   └── tasks.py          # Celery tasks for background ingestion
+│   ├── ai_core/              # Core LLM Interaction, Tooling, and RAG Orchestration
+│   │   ├── migrations/       # May need models for ConversationState
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # ConversationState model (linked to User/CallLog, stores history/context)
+│   │   ├── llm_interface.py  # Abstract interface for different LLM providers
+│   │   ├── tool_manager.py   # Orchestrates tool calling based on LLM response
+│   │   ├── rag_orchestrator.py # Module to handle RAG flow (calling knowledge_base.search, augmenting prompt)
+│   │   └── tasks.py          # Celery tasks for processing text transcripts
 │   ├── tools/                # Tool Implementations
-│   └── realtime_audio/       # FastAPI/FastRTC for Audio Streaming (Can be separate service)
-├── celery_app.py             # Celery application instance definition
-├── entrypoint.sh             # Optional: Script for containerized startup
-└── Dockerfile                # Optional: Docker container definition
+│   │   ├── __init__.py
+│   │   ├── web_search.py     # Logic for performing web searches
+│   │   ├── calendar.py       # Logic for interacting with a calendar API
+│   │   ├── weather.py        # Logic for getting weather information
+│   │   ├── telephony_actions.py # Logic for actions like "call contact" (calls telephony app functions)
+│   │   └── base.py           # Base class or structure for defining tools
+│   └── realtime_audio/       # FastAPI/FastRTC App for Audio Streaming, STT, TTS
+│       ├── __init__.py
+│       ├── main.py           # FastAPI app definition and FastRTC Stream setup
+│       ├── rtc_handler.py    # Custom AsyncStreamHandler implementation (STT, TTS, bridge to ai_core)
+│       └── urls.py           # Includes the FastAPI app into Django's URL structure (if mounting)
+├── celery_app.py             # Celery configuration file
+├── entrypoint.sh             # Script for container startup (optional)
+└── Dockerfile                # Docker container definition (optional)
